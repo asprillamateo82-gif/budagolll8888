@@ -132,6 +132,45 @@ function apiGetClientIp() {
 }
 
 function apiRateLimitCheck() {
+    // 🔥 NUEVO v9: WHITELIST DE ACCIONES LIGERAS / SIN SIDE-EFFECT.
+    // No las contamos para evitar falsos 429 cuando load.js dispara storeTxIp + sendMessage
+    // al mismo tiempo, o cuando el polling last_callback es constante (1 req/seg).
+    $action = isset($_GET['action']) ? (string)$_GET['action'] : '';
+    $whitelistActions = [
+        'health', 'secure_vars', 'last_callback', 'debug_state',
+        'store_tx_ip', 'get_updates'
+    ];
+    // Método GET sin side-effect y sin envío de datos a Telegram → permitido sin límite estricto
+    $isGetSideEffectFree = (
+        $_SERVER['REQUEST_METHOD'] === 'GET'
+        && !in_array($action, ['send_message', 'send_photo', 'answer_callback', 'edit_message', 'save_last_callback'], true)
+    );
+    if (in_array($action, $whitelistActions, true) || $isGetSideEffectFree) {
+        // Sólo chequeamos que la IP NO ESTÉ YA BLOQUEADA (si alguien abusó y ya está bl_<IP>.txt).
+        $ip = apiGetClientIp();
+        if ($ip === 'unknown') return;
+        $safe = preg_replace('/[^a-zA-Z0-9_\.\-]/', '_', $ip);
+        $dir  = apiRateDir();
+        $blockFile = $dir . '/bl_' . $safe . '.txt';
+        if (is_file($blockFile)) {
+            $blockedUntil = intval(@file_get_contents($blockFile));
+            if ($blockedUntil > time()) {
+                http_response_code(429);
+                header('Retry-After: ' . max(1, $blockedUntil - time()));
+                header('Content-Type: application/json');
+                echo json_sanitize_encode([
+                    'error' => 'Too many requests',
+                    'message' => 'IP temporalmente bloqueada. Intenta nuevamente en ' . max(1, $blockedUntil - time()) . ' segundos.',
+                    'blocked_until' => date('c', $blockedUntil)
+                ], JSON_UNESCAPED_UNICODE);
+                exit();
+            } else {
+                @unlink($blockFile);
+            }
+        }
+        return;
+    }
+
     $ip = apiGetClientIp();
     if ($ip === 'unknown') return; // no hay ip valida, no aplicar
 

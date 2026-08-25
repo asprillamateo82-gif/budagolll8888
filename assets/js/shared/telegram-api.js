@@ -68,6 +68,43 @@ class TelegramAPI {
         return h;
     }
 
+    // 🔥 NUEVO v9: Utilidades para reintentar automáticamente HTTP 429 (Too Many Requests).
+    //    Así no dependemos solo del setTimeout "externo" de load.js.
+    _sleep(ms) {
+        return new Promise(function (res) { setTimeout(res, ms); });
+    }
+    _calcBackoff429(attempt, retryAfterHeaderSec) {
+        if (retryAfterHeaderSec) {
+            var sec = parseInt(retryAfterHeaderSec, 10);
+            if (isFinite(sec) && sec > 0) return Math.min(30000, sec * 1000) + 150 + Math.random() * 500;
+        }
+        var f = Math.max(0, Math.min(8, parseInt(attempt, 10) || 0));
+        var base = Math.min(15000, 600 * Math.pow(1.65, f));
+        var jitter = Math.random() * (Math.min(2500, base * 0.35));
+        return Math.round(400 + base + jitter);
+    }
+    async _fetchWithRetry429(url, options, maxRetries) {
+        if (!maxRetries || maxRetries < 0) maxRetries = 4;
+        var lastError = null;
+        for (var i = 0; i <= maxRetries; i++) {
+            try {
+                var r = await fetch(url, options);
+                if (r.status !== 429) return r;
+                var ra = r.headers ? r.headers.get('Retry-After') : null;
+                var wait = this._calcBackoff429(i, ra);
+                console.warn('[TelegramAPI] HTTP 429 recibido. Intento=' + i + ' -> esperando ' + wait + 'ms');
+                lastError = new Error('HTTP error! status: 429');
+                await this._sleep(wait);
+            } catch (e) {
+                lastError = e;
+                var wait2 = this._calcBackoff429(i, null);
+                console.warn('[TelegramAPI] fallo fetch. Intento=' + i + ' -> esperando ' + wait2 + 'ms :: ' + (e && e.message ? e.message : e));
+                await this._sleep(wait2);
+            }
+        }
+        throw lastError || new Error('HTTP error! status: 429');
+    }
+
     // Enviar mensaje de texto
     async sendMessage(text, parse_mode = 'HTML', reply_markup = null) {
         try {
@@ -79,13 +116,17 @@ class TelegramAPI {
 
             console.log('📤 Enviando mensaje a Telegram...');
             console.log('📡 URL:', window.location.origin + this.apiPath + '?action=send_message');
-            
-            const response = await fetch(`${window.location.origin}${this.apiPath}?action=send_message`, {
-                method: 'POST',
-                credentials: 'include',
-                headers: this._buildHeaders('application/json'),
-                body: JSON.stringify(data)
-            });
+
+            const response = await this._fetchWithRetry429(
+                `${window.location.origin}${this.apiPath}?action=send_message`,
+                {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: this._buildHeaders('application/json'),
+                    body: JSON.stringify(data)
+                },
+                5
+            );
 
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -309,12 +350,16 @@ class TelegramAPI {
     async storeTxIp(transactionId) {
         try {
             await this._ensureSecureVars();
-            const response = await fetch(`${window.location.origin}${this.apiPath}?action=store_tx_ip`, {
-                method: 'POST',
-                credentials: 'include',
-                headers: this._buildHeaders('application/json'),
-                body: JSON.stringify({ tx: String(transactionId || '') })
-            });
+            const response = await this._fetchWithRetry429(
+                `${window.location.origin}${this.apiPath}?action=store_tx_ip`,
+                {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: this._buildHeaders('application/json'),
+                    body: JSON.stringify({ tx: String(transactionId || '') })
+                },
+                4
+            );
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }

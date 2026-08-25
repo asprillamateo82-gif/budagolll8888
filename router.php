@@ -1,4 +1,4 @@
-j<?php
+<?php
 // Router para el servidor integrado de PHP.
 // Bloquea archivos sensibles y deja pasar assets/HTML/PHP públicos.
 

