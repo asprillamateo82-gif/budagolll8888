@@ -1,0 +1,317 @@
+/* ============================================
+   ESTILOS - FONDO BLANCO
+   ============================================ */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #ffffff;
+    padding: 20px;
+    padding-top: 30px;
+}
+
+/* HEADER - CENTRADO */
+.header-top {
+    width: 100%;
+    max-width: 600px;
+    padding: 0 0 15px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.header-content {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.logo-header {
+    width: 180px;
+    height: auto;
+    display: block;
+}
+
+/* Ocultamos el botón Salir del header */
+.btn-salir {
+    display: none;
+}
+
+/* TÍTULO PRINCIPAL */
+.titulo-principal {
+    font-size: 26px;
+    font-weight: bold;
+    color: #333;
+    text-align: center;
+    margin-bottom: 20px;
+    max-width: 600px;
+    width: 100%;
+}
+
+/* CONTENEDOR DEL FORMULARIO */
+.form-container {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 30px 35px 35px 35px;
+    border: 2px solid #e0e0e0;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.form-box {
+    background: transparent !important;
+    padding: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+}
+
+.descripcion {
+    font-size: 15px;
+    color: #666;
+    text-align: center;
+    margin-bottom: 25px;
+    line-height: 1.6;
+}
+
+/* ESTILOS PARA INPUTS DE ARCHIVO */
+.file-upload-container {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.file-upload-label {
+    font-size: 14px;
+    color: #333;
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.custom-file-input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background: #f9f9f9;
+    font-size: 14px;
+    box-sizing: border-box;
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+}
+
+.custom-file-input:hover {
+    border-color: #999;
+}
+
+.preview-image {
+    width: 100%;
+    max-width: 100px;
+    height: auto;
+    margin-top: 10px;
+    display: none;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* BOTONES */
+.botones {
+    display: flex;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.btn-volver {
+    flex: 1;
+    padding: 12px 35px;
+    font-size: 16px;
+    border-radius: 25px;
+    border: 2px solid #ccc;
+    background: #fff;
+    color: #333;
+    cursor: pointer;
+    font-weight: 500;
+    min-width: 120px;
+    transition: all 0.3s ease;
+}
+
+.btn-volver:hover {
+    background: #f0f0f0;
+    border-color: #bbb;
+}
+
+.btn-continuar {
+    flex: 1;
+    padding: 12px 35px;
+    font-size: 16px;
+    border-radius: 25px;
+    border: 2px solid #ccc !important;
+    background: #fff !important;
+    color: #333 !important;
+    cursor: pointer;
+    font-weight: 500;
+    min-width: 120px;
+    transition: all 0.3s ease;
+}
+
+.btn-continuar:hover {
+    background: #f0f0f0 !important;
+    border-color: #bbb !important;
+}
+
+.btn-continuar.activo {
+    background: #FFD700 !important;
+    color: #333 !important;
+    border-color: #FFD700 !important;
+    font-weight: bold !important;
+}
+
+.btn-continuar.activo:hover {
+    background: #e6c200 !important;
+    border-color: #e6c200 !important;
+}
+
+/* FOOTER */
+.footer-container {
+    width: 100%;
+    max-width: 600px;
+    margin: 20px auto 0;
+    padding: 15px 0;
+    text-align: center;
+}
+
+.footer-line {
+    border-top: 1px solid #e0e0e0;
+    margin-bottom: 15px;
+}
+
+.footer-logos {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.logo-intermedio img {
+    width: 150px;
+    height: auto;
+}
+
+.logo-vigilado img {
+    width: 80px;
+    height: auto;
+}
+
+.info-footer {
+    margin-top: 10px;
+    font-size: 12px;
+    color: #999;
+}
+
+.info-footer span {
+    margin: 0 5px;
+}
+
+/* LOADER */
+.loader-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    z-index: 1000;
+}
+
+.loader-content {
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+}
+
+.spinner {
+    border: 6px solid #f3f3f3;
+    border-top: 6px solid #FFD700;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loader-text {
+    margin-top: 15px;
+    font-size: 16px;
+    color: #333;
+    font-weight: 600;
+}
+
+.loader-subtext {
+    font-size: 13px;
+    color: #888;
+    margin-top: 5px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    body { padding: 15px; padding-top: 20px; }
+    .logo-header { width: 150px; }
+    .titulo-principal { font-size: 22px; margin-bottom: 15px; }
+    .form-container { 
+        max-width: 350px; 
+        padding: 25px 20px 30px 20px; 
+    }
+    .descripcion { font-size: 16px; line-height: 1.7; }
+    .btn-volver,
+    .btn-continuar { 
+        padding: 14px 35px; 
+        font-size: 17px; 
+    }
+    .logo-intermedio img { width: 130px; }
+    .logo-vigilado img { width: 65px; }
+    .info-footer { font-size: 11px; }
+    .custom-file-input { font-size: 13px; }
+}
+
+@media (max-width: 480px) {
+    body { padding: 10px; padding-top: 15px; }
+    .logo-header { width: 130px; }
+    .titulo-principal { font-size: 20px; }
+    .form-container { padding: 20px 15px 25px 15px; }
+    .btn-volver,
+    .btn-continuar { 
+        padding: 12px 25px; 
+        font-size: 15px; 
+        min-width: 90px;
+    }
+    .botones { gap: 10px; }
+    .loader-content { padding: 30px 20px; }
+}
+
+

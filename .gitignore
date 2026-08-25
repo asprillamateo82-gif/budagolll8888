@@ -1,0 +1,31 @@
+# ===== Logs y temporales =====
+logs/
+*.log
+tmp/
+temp/
+cache/
+
+# ===== MAC / Windows basura =====
+__MACOSX/
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# ===== IDE / Editores =====
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ===== Credenciales locales =====
+.env
+.env.local
+.env.*.local
+*.bak
+*.backup
+
+# ===== Capturas y screenshots temporales =====
+screenshots/
+*.png.tmp

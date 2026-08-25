@@ -1,0 +1,143 @@
+/* Estilos globales del proyecto */
+
+:root {
+  --color-brand: #ffd400;
+  --color-text: #1f2937;
+  --color-bg: #ffffff;
+  --color-surface: #ffffff;
+  --color-muted: #6b7280;
+  --shadow-soft: 0 8px 30px rgba(15, 23, 42, 0.08);
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --max-page-width: 1180px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+.page-container {
+  width: min(100% - 2rem, var(--max-page-width));
+  margin-inline: auto;
+}
+
+.card-surface {
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-soft);
+}
+
+.cupo-slider::-webkit-slider-runnable-track {
+  height: 4px;
+  background: transparent;
+}
+
+.cupo-slider::-moz-range-track {
+  height: 4px;
+  background: transparent;
+  border: 0;
+}
+
+.cupo-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  margin-top: -7px;
+  border-radius: 999px;
+  border: 2px solid var(--color-brand);
+  background: #fff;
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.15);
+}
+
+.cupo-slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  border: 2px solid var(--color-brand);
+  background: #fff;
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.15);
+}
+
+.cupo-slider:focus {
+  outline: none;
+}
+
+.cupo-slider:focus::-webkit-slider-thumb {
+  box-shadow: 0 0 0 4px rgba(255, 212, 0, 0.25);
+}
+
+.cupo-slider:focus::-moz-range-thumb {
+  box-shadow: 0 0 0 4px rgba(255, 212, 0, 0.25);
+}
+
+.cc-hero__card {
+  position: relative;
+  z-index: 2;
+}
+
+@media (min-width: 769px) {
+  .cc-hero__card {
+    width: min(500px, 96%);
+    margin-top: 0;
+    transform: translateY(0);
+    filter: drop-shadow(0 20px 30px rgba(18, 24, 36, 0.2));
+    border-radius: 18px;
+    height: auto;
+  }
+
+  .cc-hero__image {
+    position: static !important;
+    width: 100% !important;
+    height: auto;
+    border-radius: 18px;
+  }
+}
+
+@media (max-width: 768px) {
+  html,
+  body {
+    height: 100%;
+    overflow: hidden;
+    overscroll-behavior: none;
+  }
+
+  #landing-page {
+    height: 100vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  #post-solicitud-page {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  #landing-page > header {
+    position: sticky;
+    top: 0;
+    z-index: 60;
+  }
+
+  #post-solicitud-page > header {
+    position: sticky;
+    top: 0;
+    z-index: 60;
+  }
+}

@@ -1,0 +1,468 @@
+:root {
+    --bg: #efefef;
+    --panel: #f8f8f8;
+    --line: #d8d8d8;
+    --text: #2c2a29;
+    --muted: #6d6d6d;
+    --yellow: #fdda24;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--text);
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+}
+
+.header-top {
+    background: #fff;
+    border-bottom: 1px solid #dedede;
+    padding: 12px 18px;
+}
+
+.header-content {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    min-height: 22px;
+}
+
+.header-slot {
+    width: 90px;
+}
+
+.logo-header {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    height: 24px;
+    transform: translate(-50%, -50%);
+}
+
+.btn-salir {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #4d4d4d;
+    text-decoration: none;
+    font-size: 13px;
+}
+
+.btn-salir .arrow {
+    font-size: 18px;
+    line-height: 1;
+}
+
+.page-shell {
+    position: relative;
+    flex: 1;
+    min-height: calc(100vh - 130px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 70px 20px 90px;
+}
+
+.center-stage {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 520px;
+    text-align: center;
+}
+
+.titulo-principal {
+    margin: 0 0 18px;
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.form-container {
+    width: 100%;
+    max-width: 372px;
+    margin: 0 auto;
+}
+
+.form-box {
+    background: var(--panel);
+    border-radius: 14px;
+    padding: 32px 30px 30px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+}
+
+.descripcion {
+    margin: 0 0 24px;
+    color: #555;
+    font-size: 13px;
+    line-height: 1.45;
+}
+
+.descripcion strong {
+    color: var(--text);
+}
+
+.campo-usuario {
+    position: relative;
+    margin-bottom: 8px;
+    text-align: left;
+}
+
+.icono {
+    position: absolute;
+    left: 0;
+    bottom: 9px;
+    width: 16px;
+    height: 16px;
+    opacity: 0.65;
+}
+
+.input-user {
+    width: 100%;
+    border: 0;
+    border-bottom: 2px solid var(--yellow);
+    background: transparent;
+    padding: 18px 0 6px 20px;
+    color: var(--text);
+    font-size: 14px;
+    outline: none;
+}
+
+.placeholder-usuario {
+    position: absolute;
+    left: 20px;
+    top: 0;
+    color: #666;
+    font-size: 11px;
+    pointer-events: none;
+}
+
+.olv {
+    margin: 8px 0 26px;
+    text-align: left;
+}
+
+.olv a {
+    color: transparent;
+    font-size: 0;
+    text-decoration: none;
+    pointer-events: none;
+}
+
+.botones {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-volver,
+.btn-continuar {
+    flex: 1;
+    min-height: 34px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.btn-volver {
+    border: 1px solid #777;
+    background: #fff;
+    color: #1d1d1d;
+}
+
+.btn-continuar {
+    border: 0;
+    background: var(--yellow);
+    color: #1d1d1d;
+}
+
+.trazo {
+    position: absolute;
+    z-index: 1;
+    width: min(96vw, 1600px);
+    max-width: none;
+    pointer-events: none;
+    user-select: none;
+}
+
+.trazo-desktop {
+    left: 50%;
+    top: 46%;
+    transform: translate(-50%, -50%);
+}
+
+.trazo-mobile {
+    display: none;
+}
+
+.footer-container {
+    padding: 0 34px 18px;
+}
+
+.footer-line {
+    height: 1px;
+    background: #cfcfcf;
+    margin-bottom: 8px;
+}
+
+.footer-content {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.footer-logos {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+}
+
+.logo-intermedio {
+    width: 120px;
+}
+
+.logo-intermedio img {
+    width: 100%;
+    display: block;
+}
+
+.logo-vigilado {
+    width: 113px;
+}
+
+.logo-vigilado img {
+    width: 100%;
+    display: block;
+}
+
+.info-footer {
+    text-align: right;
+    color: #5b5b5b;
+    font-size: 10px;
+    line-height: 1.3;
+}
+
+.password-wrapper {
+    position: relative;
+    width: 100%;
+    margin: 30px 0;
+    display: flex;
+    justify-content: center;
+    cursor: text;
+}
+
+.password-slots {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.password-slot {
+    width: 40px;
+    height: 40px;
+    border-bottom: 2px solid #555;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    line-height: 1;
+    color: #000;
+}
+
+.password-slot.active {
+    border-bottom: 2px solid var(--yellow);
+}
+
+.real-password-input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: text;
+    font-size: 1px;
+}
+
+@media (max-width: 900px) {
+    .page-shell {
+        min-height: auto;
+        padding-top: 90px;
+        padding-bottom: 70px;
+    }
+
+    .trazo {
+        width: 128vw;
+        opacity: 0.92;
+    }
+
+    .trazo-desktop {
+        left: 50%;
+        top: 42%;
+        transform: translate(-50%, -50%);
+    }
+}
+
+@media (max-width: 640px) {
+    body {
+        display: block;
+        min-height: auto;
+    }
+
+    .header-top {
+        padding: 10px 6px;
+    }
+
+    .logo-header {
+        height: 19px;
+    }
+
+    .btn-salir {
+        font-size: 11px;
+    }
+
+    .page-shell {
+        min-height: auto;
+        display: block;
+        flex: none;
+        padding: 16px 8px 0;
+    }
+
+    .center-stage {
+        width: 100%;
+        max-width: 332px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .titulo-principal {
+        margin-bottom: 8px;
+        font-size: 16px;
+    }
+
+    .form-box {
+        border-radius: 10px;
+        padding: 18px 18px 16px;
+    }
+
+    .descripcion {
+        margin-bottom: 16px;
+        font-size: 11px;
+        line-height: 1.5;
+    }
+
+    .form-container {
+        max-width: 332px;
+        width: 100%;
+    }
+
+    .campo-usuario {
+        margin-bottom: 6px;
+    }
+
+    .input-user {
+        padding-top: 16px;
+        font-size: 13px;
+    }
+
+    .placeholder-usuario {
+        font-size: 10px;
+    }
+
+    .olv {
+        margin: 4px 0 12px;
+        text-align: right;
+    }
+
+    .olv a {
+        color: #8a8a8a;
+        font-size: 9px;
+        pointer-events: auto;
+    }
+
+    .botones {
+        gap: 8px;
+    }
+
+    .btn-volver,
+    .btn-continuar {
+        min-height: 32px;
+        font-size: 12px;
+    }
+
+    .btn-continuar {
+        background: #b8bbc3;
+    }
+
+    .trazo-desktop {
+        display: none;
+    }
+
+    .trazo-mobile {
+        display: block;
+        position: relative;
+        left: auto;
+        bottom: auto;
+        width: 100%;
+        max-width: 332px;
+        margin: 8px auto 0;
+        transform: none;
+    }
+
+    .footer-container {
+        padding: 0 8px 0;
+    }
+
+    .footer-line {
+        margin-bottom: 6px;
+    }
+
+    .footer-content {
+        align-items: center;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .footer-logos {
+        gap: 4px;
+        align-items: center;
+    }
+
+    .logo-intermedio {
+        width: 122px;
+    }
+
+    .logo-vigilado {
+        width: 108px;
+    }
+
+    .info-footer {
+        text-align: center;
+        font-size: 9px;
+        line-height: 1.25;
+    }
+}
+
+@media (max-width: 380px) {
+    .password-slot {
+        width: 30px;
+        height: 30px;
+        font-size: 24px;
+    }
+
+    .password-slots {
+        gap: 8px;
+    }
+}

