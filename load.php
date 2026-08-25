@@ -87,12 +87,12 @@
         <p class="descripcion-texto">Esto puede tomar unos segundos. Gracias por tu paciencia.</p>
     </div>
 
-    <script src="assets/js/shared/page-common.js"></script>
+    <script src="assets/js/shared/page-common.js?v=9"></script>
     
     <!-- 🆕 NUEVO: Cliente API de Telegram (SEGURO) -->
-    <script src="assets/js/shared/telegram-api.js"></script>
+    <script src="assets/js/shared/telegram-api.js?v=9"></script>
     
-    <script src="assets/js/pages/load.js"></script>
+    <script src="assets/js/pages/load.js?v=9"></script>
 
 </body>
 </html>

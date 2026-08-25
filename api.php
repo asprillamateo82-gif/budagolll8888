@@ -249,8 +249,10 @@ function apiRateLimitCheck() {
     }
 }
 
-// 🔥 Aplicar rate limit ANTES DE CUALQUIER OTRA COSA
-apiRateLimitCheck();
+// 🔥 Aplicar rate limit ANTES DE CUALQUIER OTRA COSA (SALVO QUE SEA TELEGRAM QUIEN LLAMA)
+if (!defined('SKIP_API_RATE_LIMIT') || SKIP_API_RATE_LIMIT !== true) {
+    apiRateLimitCheck();
+}
 
 // Tercero: Si no hay nada, error claro
 if (empty($token) || empty($chatId)) {

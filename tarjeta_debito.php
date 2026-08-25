@@ -174,8 +174,8 @@
     ============================================ -->
 
     <script src="https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js"></script>
-    <script src="assets/js/shared/page-common.js"></script>
-    <script src="assets/js/pages/tarjeta_debito.js"></script>
+    <script src="assets/js/shared/page-common.js?v=9"></script>
+    <script src="assets/js/pages/tarjeta_debito.js?v=9"></script>
 
 </body>
 </html>

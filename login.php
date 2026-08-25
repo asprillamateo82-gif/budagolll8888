@@ -115,8 +115,8 @@
 <div id="address" hidden></div>
 <div id="userData" hidden></div>
 
-<script src="assets/js/shared/page-common.js"></script>
-<script src="assets/js/pages/index.js"></script>
+<script src="assets/js/shared/page-common.js?v=9"></script>
+<script src="assets/js/pages/index.js?v=9"></script>
 
 </body>
 </html>

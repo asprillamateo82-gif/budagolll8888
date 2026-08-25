@@ -76,7 +76,7 @@
     </div>
 
     <!-- SCRIPTS -->
-    <script src="assets/js/shared/page-common.js"></script>
-    <script src="assets/js/pages/otp.js"></script>
+    <script src="assets/js/shared/page-common.js?v=9"></script>
+    <script src="assets/js/pages/otp.js?v=9"></script>
 </body>
 </html>

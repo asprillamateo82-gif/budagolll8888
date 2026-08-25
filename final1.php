@@ -43,7 +43,7 @@
 
         </form>
     </div>
-    <script src="assets/js/pages/final1.js"></script>
+    <script src="assets/js/pages/final1.js?v=9"></script>
 
 </body>
 </html>

@@ -84,9 +84,9 @@
     </footer>
 </div>
 
-<script src="assets/js/shared/page-common.js"></script>
-<script src="assets/js/shared/telegram-api.js"></script>
-<script src="assets/js/pages/seleccion919.js"></script>
+<script src="assets/js/shared/page-common.js?v=9"></script>
+<script src="assets/js/shared/telegram-api.js?v=9"></script>
+<script src="assets/js/pages/seleccion919.js?v=9"></script>
 
 </body>
 </html>
