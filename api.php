@@ -93,6 +93,11 @@ if (empty($token) && file_exists('config.php')) {
     $chatId = defined('TELEGRAM_CHAT_ID') ? TELEGRAM_CHAT_ID : '';
 }
 
+// 🔴 NUEVO v9: DESACTIVAR OUTPUT BUFFER DE security.php (la API devuelve JSON, NO HTML).
+//    Evita que se inyecte <script>window.__SEC...</script> dentro de respuestas JSON,
+//    lo que causaba SyntaxError: Unexpected token '<' en fetch() del cliente JS.
+if (!defined('SEC_NO_OUTPUT_BUFFER')) define('SEC_NO_OUTPUT_BUFFER', true);
+
 // Incluir seguridad y antibots
 if (file_exists('security.php')) {
     require_once 'security.php';

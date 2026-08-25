@@ -35,6 +35,32 @@ if (!defined('API_INCLUDE_MODE')) {
 require_once __DIR__ . '/api.php';
 
 // ============================================
+// 🔥 NUEVO v9: VALIDACIÓN WEBHOOK SECRET (Paso 4.1 guía → 10/10)
+// Si en Azure configuras TELEGRAM_WEBHOOK_SECRET y lo pasas al setWebhook
+// con &secret=..., Telegram envía:
+//   X-Telegram-Bot-Api-Secret-Token: <TU_SECRET>
+// Si no coincide o no viene → 403 y NO procesa nada.
+// Si NO definiste la variable → se salta la comprobación (nivel 9/10).
+// ============================================
+if (defined('TELEGRAM_WEBHOOK_SECRET') && is_string(TELEGRAM_WEBHOOK_SECRET) && TELEGRAM_WEBHOOK_SECRET !== '') {
+    $sent = '';
+    foreach (['HTTP_X_TELEGRAM_BOT_API_SECRET_TOKEN', 'REDIRECT_HTTP_X_TELEGRAM_BOT_API_SECRET_TOKEN'] as $k) {
+        if (isset($_SERVER[$k]) && is_string($_SERVER[$k]) && $_SERVER[$k] !== '') { $sent = $_SERVER[$k]; break; }
+    }
+    if ($sent === '' || !is_string($sent) || !hash_equals(TELEGRAM_WEBHOOK_SECRET, $sent)) {
+        http_response_code(403);
+        if (function_exists('log_blocked')) {
+            @log_blocked('WEBHOOK_SECRET_FAIL ip=' . (function_exists('sec_get_client_ip') ? sec_get_client_ip() : 'unknown') . ' sent_len=' . strlen($sent));
+        }
+        echo json_encode([
+            'ok' => false,
+            'error' => 'Forbidden: invalid or missing webhook secret.'
+        ], JSON_UNESCAPED_UNICODE);
+        exit();
+    }
+}
+
+// ============================================
 // 3. LEER ENTRADA (POST JSON directo de Telegram)
 // ============================================
 

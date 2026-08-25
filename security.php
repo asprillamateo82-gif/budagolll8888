@@ -15,7 +15,15 @@ function log_blocked($reason) {
 // IP CLIENTE CONFISIBLE (sin spoofing de headers si no hay proxy confiable)
 // ============================================================
 function sec_get_client_ip() {
-    $trustProxyHeaders = (bool)getenv('TRUST_PROXY_HEADERS');
+    // Valor viene de config.php -> define('TRUST_PROXY_HEADERS_ENABLED', ...) usando la variable
+    // de entorno TRUST_PROXY_HEADERS (así coincide 1:1 con la GUÍA).
+    if (defined('TRUST_PROXY_HEADERS_ENABLED')) {
+        $trustProxyHeaders = (bool)TRUST_PROXY_HEADERS_ENABLED;
+    } else {
+        // Fallback si alguien no cargó config.php? (no debería pasar).
+        $env = strtolower((string)getenv('TRUST_PROXY_HEADERS'));
+        $trustProxyHeaders = ($env === '1' || $env === 'true' || $env === 'on' || $env === 'yes');
+    }
 
     if ($trustProxyHeaders) {
         $keys = ['HTTP_CF_CONNECTING_IP', 'HTTP_X_FORWARDED_FOR', 'HTTP_X_REAL_IP', 'HTTP_CLIENT_IP', 'REMOTE_ADDR'];
@@ -241,13 +249,55 @@ if ($tx !== '') {
 // 3. Inicializar tokens CSRF y LS Key (aunque no usemos la inyección inmediatamente)
 sec_init_tokens();
 
-// 4. HOOK de salida: inyecta window.__SEC y CSP básico AUTOMÁTICAMENTE en TODAS las páginas
+// 4. HOOK de salida: inyecta window.__SEC SOLO SI LA RESPUESTA ES HTML (¡NO JSON, NO XML, NO texto plano!)
+//    Evita que se cuelen <script> en api.php (Content-Type: application/json) y rompan JSON.parse.
 if (!defined('SEC_NO_OUTPUT_BUFFER')) {
     define('SEC_NO_OUTPUT_BUFFER', true);
     function sec_output_buffer_inject($buffer) {
         if (!is_string($buffer) || trim($buffer) === '') return $buffer;
+
+        // 🔴 CHECK 1: Content-Type HTTP Response Header (si ya se mandó o está en headers_list)
+        if (function_exists('headers_list')) {
+            foreach (headers_list() as $hdr) {
+                $sep = strpos($hdr, ':');
+                if ($sep === false) continue;
+                $hn = strtolower(trim(substr($hdr, 0, $sep)));
+                $hv = strtolower(trim(substr($hdr, $sep + 1)));
+                if ($hn === 'content-type' && $hv !== '' && strpos($hv, 'text/html') === false && strpos($hv, 'application/xhtml') === false) {
+                    // JSON / XML / image / octet-stream / plain → NO inyectar
+                    return $buffer;
+                }
+            }
+        }
+
+        // 🔴 CHECK 2: sniff del payload (si empieza por JSON válido, no tocar)
+        $sniff = ltrim($buffer);
+        if ($sniff !== '' && (
+                $sniff[0] === '{' || $sniff[0] === '[' ||
+                strpos($sniff, '<?xml') === 0 ||
+                stripos($sniff, '<svg') === 0 ||
+                stripos($sniff, '<!doctype json') === 0
+            )
+        ) {
+            return $buffer;
+        }
+
+        // 🔴 CHECK 3: El buffer contiene HTML? Solo inyectar si hay <html, <head, <body o un <!doctype html>.
+        $hasHtml = (
+            stripos($buffer, '<!doctype') !== false ||
+            stripos($buffer, '<html')     !== false ||
+            stripos($buffer, '<head')     !== false ||
+            stripos($buffer, '<body')     !== false
+        );
+        if (!$hasHtml) {
+            // Páginas PHP pequeñas sin DOCTYPE (ej: 302 redirecciones, o die("…") en texto plano).
+            // → No inyectar para no romper nada.
+            return $buffer;
+        }
+
         $injection = sec_inject_bootstrap_js();
         if ($injection === '' || $injection === '0') return $buffer;
+
         $injHead = stripos($buffer, '</head>');
         if ($injHead !== false) {
             return substr_replace($buffer, $injection . '</head>', $injHead, 7);
